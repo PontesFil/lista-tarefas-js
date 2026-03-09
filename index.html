@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Tarefas</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            padding: 40px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #btnLimpar {
+            background: #e74c3c;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        li button {
+            background: #e74c3c;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Minha Lista de Tarefas</h1>
+
+    <p id="contador"></p>
+
+    <input id="inputTarefa" placeholder="Digite uma tarefa">
+
+    <button id="btnAdicionar">Adicionar</button>
+
+    <button id="btnLimpar">Limpar Tudo</button>
+
+    <ul id="lista"></ul>
+
+    <script>
+
+        let tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+
+        const input = document.getElementById("inputTarefa");
+        const botao = document.getElementById("btnAdicionar");
+        const lista = document.getElementById("lista");
+        const btnLimpar = document.getElementById("btnLimpar");
+        const contador = document.getElementById("contador");
+
+        function salvarNoLocalStorage() {
+            localStorage.setItem("tarefas", JSON.stringify(tarefas));
+        }
+
+        function removerTarefa(id) {
+
+            tarefas = tarefas.filter(function (tarefa) {
+                return tarefa.id !== id;
+            });
+
+            salvarNoLocalStorage();
+
+            renderizarTarefas();
+
+        }
+
+        function limparTarefas() {
+
+            tarefas = [];
+
+            salvarNoLocalStorage();
+
+            renderizarTarefas();
+
+        }
+
+        function alternarConclusao(id) {
+
+            tarefas = tarefas.map(function (tarefa) {
+
+                if (tarefa.id === id) {
+                    tarefa.concluida = !tarefa.concluida;
+                }
+
+                return tarefa;
+
+            });
+
+            salvarNoLocalStorage();
+
+            renderizarTarefas();
+
+        }
+
+        function renderizarTarefas() {
+
+            lista.innerHTML = "";
+
+            contador.textContent = `Você tem ${tarefas.length} tarefas`;
+
+            tarefas.forEach(function (tarefa) {
+
+                const li = document.createElement("li");
+
+                if (tarefa.concluida) {
+                    li.style.textDecoration = "line-through";
+                    li.style.opacity = "0.6";
+                }
+
+                li.textContent = tarefa.texto;
+
+                li.addEventListener("click", function (e) {
+
+                    if (e.target.tagName !== "BUTTON") {
+                        alternarConclusao(tarefa.id);
+                    }
+
+                });
+
+                const botaoRemover = document.createElement("button");
+
+                botaoRemover.textContent = "Remover";
+
+                botaoRemover.onclick = function () {
+                    removerTarefa(tarefa.id);
+                }
+
+                li.appendChild(botaoRemover);
+
+                lista.appendChild(li);
+
+            });
+
+        }
+
+        btnLimpar.onclick = function () {
+            limparTarefas();
+        }
+
+        botao.onclick = function () {
+
+            const texto = input.value.trim();
+
+            if (texto === "") return;
+
+            tarefas.push({
+                id: Date.now(),
+                texto: texto,
+                concluida: false
+            });
+
+            salvarNoLocalStorage();
+
+            renderizarTarefas();
+
+            input.value = "";
+
+            input.focus();
+
+        }
+
+        input.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter") {
+                botao.click();
+            }
+
+        });
+
+        renderizarTarefas();
+
+    </script>
+
+</body>
+
+</html>
