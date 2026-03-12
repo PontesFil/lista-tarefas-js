@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f8;
+    padding: 40px;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#btnLimpar {
+    background: #e74c3c;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+li {
+    background: white;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+li button {
+    background: #e74c3c;
+}
+
+#filtros {
+    margin-bottom: 15px;
+}
+
+#filtros button {
+    background: #3498db;
+}
+
+#filtros button:hover {
+    opacity: 0.85;
+}
+
+li div {
+    display: flex;
+    gap: 8px;
+}
+
+li button:first-child {
+    background: #f39c12;
+}
+
+li button:last-child {
+    background: #e74c3c;
+}
+
+.filtro-ativo {
+    background: #2c3e50 !important;
+}
