@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Lista de Tarefas</title>
 
     <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -21,13 +22,34 @@
         <button id="filtroConcluidas">Concluídas</button>
     </div>
 
-    <input id="inputTarefa" placeholder="Digite uma tarefa">
+    <div class="controle">
 
-    <button id="btnAdicionar">Adicionar</button>
+        <input id="inputTarefa" type="text" placeholder="Digite uma tarefa" />
 
-    <button id="btnLimpar">Limpar Tudo</button>
+        <button id="btnAdicionar">Adicionar</button>
 
-    <ul id="lista"></ul>
+        <button id="btnLimpar">Limpar Tudo</button>
+
+    </div>
+
+    <div class="kanban">
+
+        <div class="coluna" id="todo">
+            <h2>A Fazer</h2>
+            <div class="lista"></div>
+        </div>
+
+        <div class="coluna" id="doing">
+            <h2>Fazendo</h2>
+            <div class="lista"></div>
+        </div>
+
+        <div class="coluna" id="done">
+            <h2>Concluído</h2>
+            <div class="lista"></div>
+        </div>
+
+    </div>
 
     <script src="script.js"></script>
 
