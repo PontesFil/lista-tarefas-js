@@ -88,6 +88,26 @@ function atualizarFiltroVisual(){
     if(filtroAtual==="concluidas") filtroConcluidas.classList.add("filtro-ativo");
 }
 
+function getCardDepoisDaPosicao(coluna, y) {
+
+    const cards = [...coluna.querySelectorAll(".card:not(.arrastando)")];
+
+    if (cards.length === 0) return null;
+
+    return cards.reduce((maisProximo, card) => {
+
+        const box = card.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+
+        if (offset < 0 && offset > maisProximo.offset) {
+            return { offset: offset, element: card };
+        } else {
+            return maisProximo;
+        }
+
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
 function renderizarTarefas(){
 
     colunaTodo.innerHTML="";
@@ -107,13 +127,20 @@ function renderizarTarefas(){
         card.draggable = true;
         card.dataset.id = tarefa.id;
 
-        card.addEventListener("dragstart", () => {
-            card.classList.add("arrastando");
-        });
+        card.addEventListener("dragstart", (e) => {
 
-        card.addEventListener("dragend", () => {
-            card.classList.remove("arrastando");
-        });
+    card.classList.add("arrastando");
+
+    e.dataTransfer.setData("text/plain", tarefa.id);
+    e.dataTransfer.effectAllowed = "move";
+
+});
+
+card.addEventListener("dragend", () => {
+
+    card.classList.remove("arrastando");
+
+});
 
         const texto = document.createElement("p");
         texto.textContent=tarefa.texto;
@@ -147,33 +174,51 @@ function renderizarTarefas(){
 
 /* DRAG AND DROP */
 
-const colunas = [colunaTodo, colunaDoing, colunaDone];
+function iniciarDragDrop(){
 
-colunas.forEach(coluna => {
+    const colunas = [colunaTodo, colunaDoing, colunaDone];
 
-    coluna.addEventListener("dragover", (e)=>{
-        e.preventDefault();
+    colunas.forEach(coluna => {
+
+        coluna.addEventListener("dragover", (e) => {
+
+            e.preventDefault();
+
+            const cardArrastando = document.querySelector(".arrastando");
+
+            if (!cardArrastando) return;
+
+            const depoisDoCard = getCardDepoisDaPosicao(coluna, e.clientY);
+
+            if (depoisDoCard == null) {
+                coluna.appendChild(cardArrastando);
+            } else {
+                coluna.insertBefore(cardArrastando, depoisDoCard);
+            }
+
+        });
+
+        coluna.addEventListener("drop", () => {
+
+            const cardArrastando = document.querySelector(".arrastando");
+
+            if (!cardArrastando) return;
+
+            const id = Number(cardArrastando.dataset.id);
+
+            const tarefa = tarefas.find(t => t.id === id);
+
+            if (coluna === colunaTodo) tarefa.status = "todo";
+            if (coluna === colunaDoing) tarefa.status = "doing";
+            if (coluna === colunaDone) tarefa.status = "done";
+
+            salvarNoLocalStorage();
+           
+        });
+
     });
 
-    coluna.addEventListener("drop", ()=>{
-
-        const cardArrastando = document.querySelector(".arrastando");
-
-        if(!cardArrastando) return;
-
-        const id = Number(cardArrastando.dataset.id);
-
-        const tarefa = tarefas.find(t=>t.id===id);
-
-        if(coluna===colunaTodo) tarefa.status="todo";
-        if(coluna===colunaDoing) tarefa.status="doing";
-        if(coluna===colunaDone) tarefa.status="done";
-
-        salvarNoLocalStorage();
-        renderizarTarefas();
-    });
-
-});
+}
 
 /* BOTÕES */
 
@@ -221,4 +266,5 @@ input.addEventListener("keydown",e=>{
     if(e.key==="Enter") botao.click();
 });
 
+iniciarDragDrop();
 renderizarTarefas();
